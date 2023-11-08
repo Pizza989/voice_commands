@@ -1,0 +1,32 @@
+Request Cycle:
+    + detection
+    + recognition
+    + interpretation
+    + execution
+
+Generics:
+    + audio buffers as numpy arrays with sample rate of 16000Hz
+
+detection:
+    + listen to mic and monitor volume
+    + if volume above a threshold start recording
+    + stop recording if some logic applies
+    + enqueue recording as numpy array
+
+recognition:
+    + get buffer from queue
+    + do recognition using whisper
+    + add recognised text to queue
+
+interpretation:
+    + get text from queue
+    + get command for text
+    + add command to queue
+
+execution:
+    + get command from queue
+    + execute command
+
+command:
+    + identifier
+    + execute
