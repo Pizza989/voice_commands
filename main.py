@@ -4,23 +4,16 @@ from voice_automatisation import (
     recognition,
     interpretation,
 )
-from voice_automatisation.command import Command, Keyword
-
-
-def test_callback():
-    print("works.")
+from voice_automatisation.command import example_commands
 
 
 device_index = None  # device_selection.dialog()
-command_list = [Command("test", [Keyword("hallo", 1)], callback=test_callback)]
 
 for segment in detection.listen(device_query=device_index):
-    command = interpretation.get_associated_command(
-        command_list,
-        recognition.transcribe(segment),
-        0,
-    )
+    transcription = recognition.transcribe(segment)
+    command = interpretation.get_associated_command(example_commands, transcription)
     if command is None:
-        print("Could not decipher that bollocks.")
+        print(f"Could not decipher that bollocks: {transcription}")
     else:
         command.callback()
+        print(f"Called a command: {command.identifier}")

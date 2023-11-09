@@ -1,15 +1,32 @@
 from dataclasses import dataclass
+import subprocess
 from typing import Callable
 
 
 @dataclass
 class Keyword:
-    word: str
+    synonyms: tuple[str]
     weight: float
 
 
 @dataclass
 class Command:
     identifier: str
-    keywords: list[Keyword]
+    keywords: tuple[Keyword]
     callback: Callable
+
+
+def play_pause():
+    subprocess.call(["xdotool", "key", "XF86AudioPlay"])
+
+
+example_commands = [
+    Command(
+        "play/pause",
+        (
+            Keyword(("wiedergabe",), 5),
+            Keyword(("pause", "pausieren", "weiter", "fortführen"), 1),
+        ),
+        callback=play_pause,
+    )
+]
