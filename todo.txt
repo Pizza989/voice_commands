@@ -7,6 +7,9 @@ Request Cycle:
 Generics:
     + audio buffers as numpy arrays with sample rate of 16000Hz
 
+device_selection:
+    + allow user to select a device
+
 detection:
     + listen to mic and monitor volume
     + if volume above a threshold start recording

@@ -1,6 +1,6 @@
 import numpy as np
+import sounddevice as sd
 
-from pvrecorder import PvRecorder
 from scipy import signal
 
 
@@ -20,40 +20,34 @@ def resample(buffer: list[int], old: int, new: int):
 
 
 def listen(
-    device_index=3,
+    device_query=None,
     frame_length=512,
     sample_rate=16000,
-    detection_threshold=100,
+    detection_threshold=-20,
     pause_threshold=1,
 ):
-    recorder = PvRecorder(frame_length=frame_length, device_index=device_index)
-    recorder.start()
-
-    buffer = []
-    is_talking = False
+    device = sd.InputStream(samplerate=sample_rate, device=device_query)
+    device.start()
+    segment = []
+    started_talking = False
     pause_time = 0
 
-    while recorder.is_recording:
-        frame = recorder.read()
-        volume = calculate_volume(frame)
-        if volume >= detection_threshold:
-            is_talking = True
-            pause_time = 0
-        elif is_talking:
-            pause_time += (1 / recorder.sample_rate) * frame_length
+    while device.active:
+        frames, _ = device.read(frame_length)
+        frames = frames.mean(axis=1)
+        volume = calculate_volume(frames)
 
-        if is_talking:
-            buffer.append(frame)
+        if volume >= detection_threshold:
+            started_talking = True
+            pause_time = 0
+        elif started_talking:
+            pause_time += (1 / sample_rate) * len(frames)
+
+        if started_talking:
+            segment.extend(frames)
             if pause_time >= pause_threshold:
-                if recorder.sample_rate != sample_rate:
-                    yield resample(
-                        buffer,
-                        recorder.sample_rate,
-                        sample_rate,
-                    )
-                else:
-                    yield buffer
+                yield np.array(segment, dtype=np.float32)
                 # reset values
-                buffer.clear()
-                is_talking = False
+                segment.clear()
+                started_talking = False
                 pause_time = 0
