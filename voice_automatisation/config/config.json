@@ -1,0 +1,6 @@
+{
+  "samplerate": 16000,
+  "noise_level": 0.0007059370779138084,
+  "speech_level": 0.037848637519346084,
+  "min_speech_volume_ratio": 0.2
+}

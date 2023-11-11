@@ -1,5 +1,4 @@
 import sounddevice as sd
-
 from simple_term_menu import TerminalMenu
 
 

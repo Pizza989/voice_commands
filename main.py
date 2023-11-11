@@ -1,13 +1,20 @@
-from voice_automatisation import (
-    device_selection,
-    detection,
-    recognition,
-    interpretation,
-)
-from voice_automatisation.command import example_commands
+from pathlib import Path
 
+from voice_automatisation import (
+    detection,
+    device_selection,
+    example_commands,
+    interpretation,
+    recognition,
+)
+from voice_automatisation.config import calibrate, get_config
 
 device_index = None  # device_selection.dialog()
+
+config = get_config()
+if not ("noise_level" in config and "speech_level" in config):
+    calibrate()
+
 
 for segment in detection.listen(device_query=device_index):
     transcription = recognition.transcribe(segment)

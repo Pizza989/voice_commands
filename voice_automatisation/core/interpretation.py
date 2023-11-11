@@ -1,7 +1,7 @@
 import math
 import string
 
-from .command import Command
+from ..command import Command
 
 
 def remove_punctuation(text) -> str:
