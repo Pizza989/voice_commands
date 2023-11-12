@@ -16,10 +16,6 @@ class Command:
     callback: Callable
 
 
-def play_pause():
-    subprocess.call(["xdotool", "key", "XF86AudioPlay"])
-
-
 example_commands = [
     Command(
         "play/pause",
@@ -27,6 +23,6 @@ example_commands = [
             Keyword(("wiedergabe",), 5),
             Keyword(("pause", "pausieren", "weiter", "fortführen"), 1),
         ),
-        callback=play_pause,
+        callback=lambda: subprocess.call(["xdotool", "key", "XF86AudioPlay"]),
     )
 ]
