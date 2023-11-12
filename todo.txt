@@ -16,4 +16,5 @@ command:
 todo:
     + enhance voice activity detection using either a signal processing based approach (mel spectogram) or a deep learning approach
     + make speech recognition faster (maybe look for coqui ai models/german exclusive models/not an asr model)
+      https://github.com/uhh-lt/kaldi-tuda-de, https://github.com/speechcatcher-asr/speechcatcher, https://alphacephei.com/
     + maybe use an approach like https://github.com/NeuralNine/neuralintents/blob/master/neuralintents for interpretation

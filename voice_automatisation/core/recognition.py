@@ -1,12 +1,15 @@
-import numpy as np
-import whisper
+from vosk import KaldiRecognizer, Model
 
-model = whisper.load_model("tiny")
+model = Model(
+    r"./voice_automatisation/models/vosk-model-small-de-0.15/vosk-model-small-de-0.15"
+)
+recognizer = KaldiRecognizer(model, 16000)
 print("model loaded.")
 
 
-def transcribe(buffer: np.ndarray):
+def transcribe(segment):
     print("Transcriping audio segment...")
-    transcription = model.transcribe(buffer, language="de")
-    print(transcription)
-    return transcription["text"]
+    recognizer.AcceptWaveform(segment)
+    text = recognizer.Result()
+    print(text)
+    return text
