@@ -13,5 +13,4 @@ def transcribe(segment):
     print("Transcriping audio segment...")
     recognizer.AcceptWaveform(segment)
     text = recognizer.Result()
-    print(text)
     return text

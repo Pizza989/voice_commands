@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pyaudio
 
-from ..core.audio_device import Device
+from ..core.audio_device import Audio
 from ..core.audio_processing_utils import mean_spectogram_from_buffer
 
 BASE_PATH = Path(__file__).parent
@@ -28,11 +28,11 @@ def calibrate():
     input("Press Enter to continue...")
     mean_spectogram = []
 
-    device = Device()
+    audio = Audio()
 
     print("Wait while the noise level is being determined.\n")
 
-    with device.open(**stream_data) as stream:
+    with audio.open(**stream_data) as stream:
         start = time.time()
         while stream.is_active():
             buffer = stream.read(512)
@@ -45,7 +45,7 @@ def calibrate():
 
     print("The programm will now determin the speech level.")
     print("Press Enter after you said something...")
-    with device.open(**stream_data) as stream:
+    with audio.open(**stream_data) as stream:
         while stream.is_active():
             buffer = stream.read(512)
             mean_spectogram.append(mean_spectogram_from_buffer(buffer))
@@ -79,5 +79,6 @@ stream_data = {
     "format": pyaudio_dtype,
     "rate": config["samplerate"],
     "input": True,
+    "output": False,
     "channels": 1,
 }
