@@ -1,6 +1,7 @@
 import subprocess
 from dataclasses import dataclass
-from typing import Callable
+
+from .interaction import Interaction
 
 
 @dataclass
@@ -13,7 +14,11 @@ class Keyword:
 class Command:
     identifier: str
     keywords: tuple[Keyword]
-    callback: Callable
+    interaction: Interaction
+
+
+def interaction():
+    return Interaction("Das hat nicht funktioniert.", lambda: print("fehler"))
 
 
 example_commands = [
@@ -23,6 +28,8 @@ example_commands = [
             Keyword(("wiedergabe",), 5),
             Keyword(("pause", "pausieren", "weiter", "fortführen"), 1),
         ),
-        callback=lambda: subprocess.call(["xdotool", "key", "XF86AudioPlay"]),
+        interaction=Interaction(
+            "1", lambda: subprocess.call(["xdotool", "run", "XF86AudioPlay"])
+        ),
     )
 ]
