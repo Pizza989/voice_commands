@@ -99,7 +99,7 @@ def make_default_config(
     if not ("noise_level" in config["vad"] and "speech_level" in config["vad"]):
         calibrate()
     if not config["vad"].get("min_speech_volume_ratio", None):
-        config["min_speech_volume_ratio"] = min_speech_volume_ration
+        config["vad"]["min_speech_volume_ratio"] = min_speech_volume_ration
 
     set_config(config)
 

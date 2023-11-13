@@ -1,3 +1,5 @@
+import json
+
 from vosk import KaldiRecognizer
 from vosk import Model as VModel
 
@@ -11,5 +13,5 @@ class Model(VModel):
 
     def transcribe(self, segment):
         self.recognizer.AcceptWaveform(segment)
-        text = self.recognizer.Result()
+        text = json.loads(self.recognizer.Result())["text"]
         return text

@@ -31,6 +31,7 @@ class Assistant:
                 if command := self.interpreter.associate(transcription):
                     self.on_command(command)
                     execute_command(command, on_interaction=self.on_interaction)
+                    self._awake = False
                 else:
                     self.on_no_associated_command()
             else:

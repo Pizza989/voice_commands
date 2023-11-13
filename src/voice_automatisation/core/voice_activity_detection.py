@@ -12,7 +12,7 @@ class VADetector:
         segment = b""
         started_talking = False
         pause_time = 0
-        detection_threshold = config["min_speech_volume_ratio"] * (
+        detection_threshold = config["vad"]["min_speech_volume_ratio"] * (
             config["vad"]["speech_level"] - config["vad"]["noise_level"]
         )
         with api.open(**config["input_device_info"]) as stream:
