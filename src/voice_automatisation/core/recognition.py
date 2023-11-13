@@ -3,7 +3,7 @@ from vosk import KaldiRecognizer, Model
 from ..config import config
 
 model = Model(
-    r"./voice_automatisation/models/vosk-model-small-de-0.15/vosk-model-small-de-0.15"
+    r"./src/voice_automatisation/models/vosk-model-small-de-0.15/vosk-model-small-de-0.15"
 )
 recognizer = KaldiRecognizer(model, config["samplerate"])
 print("model loaded.")
