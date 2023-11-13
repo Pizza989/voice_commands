@@ -1,17 +1,17 @@
-from vosk import KaldiRecognizer, Model
+from vosk import KaldiRecognizer
+from vosk import Model as VModel
 
 from ..config import config
 
-model = Model(
-    r"./src/voice_automatisation/models/vosk-model-small-de-0.15/vosk-model-small-de-0.15"
-)
-recognizer = KaldiRecognizer(model, config["samplerate"])
-print("model loaded.")
 
+class Model(VModel):
+    def __init__(self, model_path=None, model_name=None, lang=None):
+        super().__init__(model_path, model_name, lang)
+        self.recognizer = KaldiRecognizer(self, config["input_device_info"]["rate"])
 
-def transcribe(segment):
-    print("Transcriping audio segment...")
-    recognizer.AcceptWaveform(segment)
-    text = recognizer.Result()
-    print(text)
-    return text
+    def transcribe(self, segment):
+        print("Transcriping audio segment...")
+        self.recognizer.AcceptWaveform(segment)
+        text = self.recognizer.Result()
+        print(text)
+        return text

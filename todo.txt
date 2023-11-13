@@ -18,3 +18,6 @@ todo:
     + make speech recognition faster (maybe look for coqui ai models/german exclusive models/not an asr model)
       https://github.com/uhh-lt/kaldi-tuda-de, https://github.com/speechcatcher-asr/speechcatcher, https://alphacephei.com/
     + maybe use an approach like https://github.com/NeuralNine/neuralintents/blob/master/neuralintents for interpretation
+
+problems:
+    right now if in voice_automatisation/__init__.py the config is not being imported first the application crashes fix this
