@@ -20,4 +20,7 @@ todo:
     + maybe use an approach like https://github.com/NeuralNine/neuralintents/blob/master/neuralintents for interpretation
 
 problems:
-    right now if in voice_automatisation/__init__.py the config is not being imported first the application crashes fix this
+    + right now if in voice_automatisation/__init__.py the config is not being imported first the application crashes fix this
+    
+    + when running the container, after or rather during the call to load the model the output to stdin stops for some reason 
+      but the code still runds bc after terminating the controller via a keyboardinterrupt all the missing output is suddenly printed
