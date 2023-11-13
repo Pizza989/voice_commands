@@ -6,7 +6,7 @@ its just context managers
 import pyaudio
 
 
-class Device(pyaudio.PyAudio):
+class Audio(pyaudio.PyAudio):
     def open(self, *args, **kwargs):
         stream = Stream(self, *args, **kwargs)
         self._streams.add(stream)

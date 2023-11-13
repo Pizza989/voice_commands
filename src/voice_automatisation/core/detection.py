@@ -1,5 +1,5 @@
 from ..config import config, stream_data
-from .audio_device import Device
+from .audio_device import Audio
 from .audio_processing_utils import mean_spectogram_from_buffer
 
 
@@ -13,7 +13,7 @@ def listen(
     detection_threshold = config["min_speech_volume_ratio"] * (
         config["speech_level"] - config["noise_level"]
     )
-    with Device().open(**stream_data) as stream:
+    with Audio().open(**stream_data) as stream:
         while stream.is_active():
             buffer = stream.read(frame_count)
             volume = mean_spectogram_from_buffer(buffer)
