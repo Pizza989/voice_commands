@@ -1,21 +1,14 @@
-from voice_automatisation import (
-    detection,
-    example_commands,
-    interpretation,
-    recognition,
+import voice_automatisation
+
+vad = voice_automatisation.voice_activity_detection.VADetector()
+model = voice_automatisation.recognition.Model(
+    r"voice_automatisation/models/vosk-model-small-de-0.15/vosk-model-small-de-0.15"
 )
-from voice_automatisation.config import calibrate, config
+interpreter = voice_automatisation.interpretation.CommandInterpreter([])
 
-device_index = None  # device_selection.dialog()
-
-if not ("noise_level" in config and "speech_level" in config):
-    calibrate()
-
-
-for segment in detection.listen():
-    transcription = recognition.transcribe(segment)
-    command = interpretation.get_associated_command(example_commands, transcription)
-    if command is None:
+for segment in vad.listen():
+    transcription = model.transcribe(segment)
+    if (command := interpreter.associate(transcription)) is None:
         print(f"Could not decipher that bollocks: {transcription}")
     else:
         command.callback()
