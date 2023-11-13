@@ -7,8 +7,12 @@ from ..dataclasses import Command
 class CommandInterpreter:
     """This implements the Interpreting-Procedure. Subclass this and override its methods to change its behaviour."""
 
-    def __init__(self, command_list: list[Command]) -> None:
-        self.command_list = command_list
+    def __init__(
+        self, commands: list[Command], wake_word: str, similarity_threshold: int = 0.8
+    ) -> None:
+        self.commands = commands
+        self.wake_word = self.format_text(wake_word)
+        self.similarity_threshold = similarity_threshold
 
     @staticmethod
     def format_text(text) -> str:
@@ -23,7 +27,7 @@ class CommandInterpreter:
         return text.translate(str.maketrans("", "", string.punctuation)).lower()
 
     @staticmethod
-    def get_similarity(self, str1: str, str2: str) -> float:
+    def get_similarity(str1: str, str2: str) -> float:
         """Calculates the jaccard-simularity of two strings
 
         Args:
@@ -58,9 +62,7 @@ class CommandInterpreter:
 
         return highscore
 
-    def calculate_command_score(
-        self, command: Command, text: str, similarity_threshold: float = 0.8
-    ) -> float:
+    def calculate_command_score(self, command: Command, text: str) -> float:
         """Calculates the score of a command given the transcribed text by
         taking into account the weight of each keyword (synonyms are
         treated as options but they are ordered hierarchically) and its
@@ -84,7 +86,7 @@ class CommandInterpreter:
                     synonym_highscore = synonym_score
                     leading_synonym = synonym
 
-            if synonym_highscore > similarity_threshold:
+            if synonym_highscore >= self.similarity_threshold:
                 score += synonym_score + math.sqrt(len(leading_synonym))
 
         return score
@@ -103,9 +105,17 @@ class CommandInterpreter:
         text = self.format_text(transcription)
         selected_command = None
         highscore = 0
-        for command in self.command_list:
+        for command in self.commands:
             score = self.calculate_command_score(command, text)
             if score > highscore and score >= score_threshold:
                 selected_command = command
 
         return selected_command
+
+    def is_wake_word(self, transcription: str):
+        if (
+            self.calculate_word_score(self.wake_word, self.format_text(transcription))
+            >= self.similarity_threshold
+        ):
+            return True
+        return False

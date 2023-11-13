@@ -10,8 +10,6 @@ class Model(VModel):
         self.recognizer = KaldiRecognizer(self, config["input_device_info"]["rate"])
 
     def transcribe(self, segment):
-        print("Transcriping audio segment...")
         self.recognizer.AcceptWaveform(segment)
         text = self.recognizer.Result()
-        print(text)
         return text
