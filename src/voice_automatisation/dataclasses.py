@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Optional
 
 
 @dataclass
@@ -20,4 +20,6 @@ class Command:
 @dataclass
 class Interaction:
     text: str
-    callback: Callable
+    callback: Callable[[str], Optional[Interaction]]
+    needs_feedback: bool
+    is_finished: bool

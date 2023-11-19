@@ -53,7 +53,7 @@ def calibrate():
     with api.open(**config["input_device_info"]) as stream:
         start = time.time()
         while stream.is_active():
-            buffer = stream.read(512)
+            buffer = stream.read(512, exception_on_overflow=False)
             mean_spectogram.append(mean_spectogram_from_buffer(buffer))
             if time.time() - start > 1:
                 stream.stop_stream()
@@ -65,7 +65,7 @@ def calibrate():
     print("Press Enter after you said something...")
     with api.open(**config["input_device_info"]) as stream:
         while stream.is_active():
-            buffer = stream.read(512)
+            buffer = stream.read(512, exception_on_overflow=False)
             mean_spectogram.append(mean_spectogram_from_buffer(buffer))
 
             if select.select([sys.stdin], [], [], 0.0)[0]:

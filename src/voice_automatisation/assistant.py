@@ -30,7 +30,7 @@ class Assistant:
             if self._awake:
                 if command := self.interpreter.associate(transcription):
                     self.on_command(command)
-                    execute_command(command, on_interaction=self.on_interaction)
+                    execute_command(command, self, transcription)
                     self._awake = False
                 else:
                     self.on_no_associated_command()
@@ -45,11 +45,11 @@ class Assistant:
 
     def on_transcription(self, transcription: str):
         if self.verbose:
-            print(f"Transcribed: {transcription}.")
+            print(f"Transcribed: {transcription}")
 
     def on_command(self, command: Command):
         if self.verbose:
-            print(f"Executing Command: {command.identifier}.")
+            print(f"Executing Command: {command.identifier}")
 
     def on_no_associated_command(self):
         if self.verbose:
@@ -57,7 +57,7 @@ class Assistant:
 
     def on_interaction(self, interaction: Interaction):
         if self.verbose:
-            print(f"Started interaction with text: {interaction.text}.")
+            print(f"Started interaction with text: {interaction.text}")
 
     def on_awake(self):
         if self.verbose:
