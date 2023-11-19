@@ -17,16 +17,16 @@ Configuration is done in the config package of voice_automatisation. The `config
 - **"input_device_info/rate"**: what samplerate to use universally for audio data within the package
 - **"input_device_info/noise_level"**: this is the peak volume (no unit) of noise that was determined by `config/__init__.py:make_default_config`
 - **"input_device_info/speech_level"**: this is the peak volume (no unit) of speech that was determined by `config/__init__.py:make_default_config`
-- **"input_device_info/min_speech_volume_ration"**: this is used to determine when someone is speaking. the default of 0.2 means that speech is detected at 20% of the `speech_level`
+- **"input_device_info/min_speech_volume_ration"**: this is used to determine when someone is speaking. the default of 0.2 means that speech is detected at 20% of the normalized `speech_level` (see `vad/min_speech_volume_ratio`)
 - **"vad/noise_level"** will be populated by `config/__init__.py:make_default_config`
 - **"vad/speech_level"** will be populated by `config/__init__.py:make_default_config`
-- **"vad/min_speech_volume_ratio"** user defined but defaults to 0.2 if left out: the threshold of when audio is classified as speech is set as follows: threshhold = min_speech_volume_ratio \* (speech_level - noise_level)
+- **"vad/min_speech_volume_ratio"** user defined but defaults to 0.2 if left out: the threshold of when audio is classified as speech is set as follows: `threshhold = min_speech_volume_ratio * (speech_level - noise_level)`
 
-_(Im using slashed to depict membership of the right side to the left)_\
+_(Im using slashes to depict membership of the right side to the left)_
 
 ## Usage
 
-The `Assistant` class defines high level access to the packages functions. It can be given a wake word a list of commands and the path to the vosk model. This Path has to be a raw string literal an must point to a directory containing a directory with the model files. I don't know why.
+The `Assistant` class defines high level access to the packages functions. It can be given a wake word a list of commands and the path to the vosk model. This Path has to be a raw string literal and must point to a directory containing a directory with the model files. I don't know why.
 
 Example
 
@@ -50,7 +50,7 @@ Upon calling `assistant.run()` it will start waiting for the voice activity dete
 
 ## Executing and defining Commands
 
-`voice_automatisation/dataclasses.py` defines three structures:
+`voice_automatisation/dataclasses.py` defines two structures:
 
 ```python
 @dataclass
@@ -59,28 +59,28 @@ class Keyword:
     weight: float
 
 
+feedback_generator = Generator[Union[str, bool, "feedback_generator"], None, None]
+
 @dataclass
 class Command:
     identifier: str
     keywords: tuple[Keyword]
-    interaction: Interaction
-
-
-@dataclass
-class Interaction:
-    text: str
-    callback: Callable
-
+    callback: Callable[[str], feedback_generator]
 ```
 
 An example command could look like this:
 
 ```python
+def callback(transcription: str):
+    yield "This is how you can have the assistant speak."
+    yield callback  # this recursion can be used for retrying. the generator is stopped after it
+    # After yielding a callback as in the command definition the assistant will wait on a new input from the
+    # user and then run the generator from `callback` with the new transctiption
+    return  # to stop the generator and therefore the interaction with the user
+
 command = Command(
     identifier="play/pause",
     keywords=(Keyword(("play", "pause"), 1), Keyword(("playback",), 3))
-    interaction=Interaction(
-        "I'll start playing", callback=lambda: subprocess.call(["xdotool", "key", "XF86AudioPlay"])
-    )
+    callback=callback
 )
 ```

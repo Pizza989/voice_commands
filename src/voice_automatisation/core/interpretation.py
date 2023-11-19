@@ -1,7 +1,7 @@
 import math
 import string
 
-from ..dataclasses import Command
+from ..types import Command
 
 
 class CommandInterpreter:

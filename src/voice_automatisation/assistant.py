@@ -2,7 +2,7 @@ from .core.executor import execute_command
 from .core.interpretation import CommandInterpreter
 from .core.recognition import Model
 from .core.voice_activity_detection import VADetector
-from .dataclasses import Command, Interaction
+from .types import Command
 
 
 class Assistant:
@@ -15,6 +15,7 @@ class Assistant:
         self.vad = VADetector()
         self.model = Model(model_path)
         self.interpreter = CommandInterpreter(self.commands, wake_word)
+        self.__segment_generator = self.vad.listen()
 
         self._awake = False
 
@@ -22,15 +23,19 @@ class Assistant:
     def is_awake(self):
         return self._awake
 
+    def next_transcription(self):
+        segment = next(self.__segment_generator)
+        return self.model.transcribe(segment)
+
     def run(self):
-        for segment in self.vad.listen():
+        for segment in self.__segment_generator:
             self.on_voice_activity_detection(segment)
             transcription = self.model.transcribe(segment)
             self.on_transcription(transcription)
             if self._awake:
                 if command := self.interpreter.associate(transcription):
                     self.on_command(command)
-                    execute_command(command, self, transcription)
+                    execute_command(command, transcription, self)
                     self._awake = False
                 else:
                     self.on_no_associated_command()
@@ -54,10 +59,6 @@ class Assistant:
     def on_no_associated_command(self):
         if self.verbose:
             print(f"Couldn't associate transcription with command.")
-
-    def on_interaction(self, interaction: Interaction):
-        if self.verbose:
-            print(f"Started interaction with text: {interaction.text}")
 
     def on_awake(self):
         if self.verbose:

@@ -1,16 +1,19 @@
-from ..dataclasses import Command, Interaction
+from ..types import Command, command_callback
 
 
-def start_interaction(interaction: Interaction, assistant, feedback: str = ""):
-    assistant.on_interaction(interaction)
-    print(interaction.text)  # TODO: say this
-    if interaction.is_finished:
-        return
-    if interaction := interaction.callback(feedback):
-        if interaction.needs_feedback:
-            feedback = assistant.model.transcribe(assistant.vad.listen())
-        start_interaction(interaction, assistant, feedback)
+def handle_feedback(generator, assistant):
+    for feedback in generator:
+        t = type(feedback)
+        if t is str:
+            print(feedback)
+        elif callable(t):
+            handle_feedback(feedback(assistant.next_transcription()), assistant)
+            break
+        else:
+            raise RuntimeError(
+                f"got unexpected feedback type. allowed types are str | {command_callback}"
+            )
 
 
-def execute_command(command: Command, assistant, transcription: str):
-    start_interaction(command.interaction, assistant, transcription)
+def execute_command(command: Command, transcription: str, assistant):
+    handle_feedback(command.callback(transcription), assistant)
