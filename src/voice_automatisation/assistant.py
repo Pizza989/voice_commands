@@ -1,3 +1,6 @@
+from pyaudio import paInt16
+
+from .config import make_default_config
 from .core.executor import execute_command
 from .core.interpretation import CommandInterpreter
 from .core.recognition import Model
@@ -7,8 +10,18 @@ from .types import Command
 
 class Assistant:
     def __init__(
-        self, wake_word: str, commands: list[Command], model_path: str, verbose=False
+        self,
+        wake_word: str,
+        commands: list[Command],
+        model_path: str,
+        input_device_query: str,
+        min_speech_volume_ratio: float = 0.2,
+        input_device_dtype: int = paInt16,
+        verbose=False,
     ) -> None:
+        make_default_config(
+            input_device_query, min_speech_volume_ratio, input_device_dtype
+        )
         self.commands = commands
         self.verbose = verbose
 

@@ -105,5 +105,3 @@ def make_default_config(
 
 
 config = get_config()
-assert "input_device_query" in config
-make_default_config(config["input_device_query"])
