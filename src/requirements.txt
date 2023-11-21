@@ -1,3 +1,4 @@
-pyaudio
-numpy
-vosk
+numpy==1.26.1
+pyaudio==0.2.11
+vosk==0.3.45
+tqdm==4.66.1
