@@ -34,6 +34,14 @@ class Api(PyAudio):
 
         return devices
 
+    @staticmethod
+    def get_input_device_from_query(query: str):
+        devices = Api.get_input_devices()
+
+        for device in devices:
+            if query.lower() in device["name"].lower():
+                return device
+
 
 class AudioStream(Stream):
     def __enter__(self):

@@ -1,4 +1,4 @@
-from ..config import config
+from ..config import INPUT_DEVICE_CONFIG, VAD_CONFIG, get_config
 from .audio_api import api
 from .audio_processing_utils import mean_spectogram_from_buffer
 
@@ -8,14 +8,17 @@ class VADetector:
         self.frame_count = frame_count
         self.pause_threshold = pause_threshold
 
+        self.__input_device_config = get_config(INPUT_DEVICE_CONFIG)
+        self.__vad_config = get_config(VAD_CONFIG)
+
     def listen(self):
         segment = b""
         started_talking = False
         pause_time = 0
-        detection_threshold = config["vad"]["min_speech_volume_ratio"] * (
-            config["vad"]["speech_level"] - config["vad"]["noise_level"]
+        detection_threshold = self.__vad_config["min_speech_volume_ratio"] * (
+            self.__vad_config["speech_level"] - self.__vad_config["noise_level"]
         )
-        with api.open(**config["input_device_info"]) as stream:
+        with api.open(**self.__input_device_config) as stream:
             while stream.is_active():
                 buffer = stream.read(self.frame_count, exception_on_overflow=False)
                 volume = mean_spectogram_from_buffer(buffer)
@@ -25,7 +28,7 @@ class VADetector:
                     pause_time = 0
                 elif started_talking:
                     pause_time += (
-                        1 / config["input_device_info"]["rate"]
+                        1 / self.__input_device_config["rate"]
                     ) * self.frame_count
 
                 if started_talking:
